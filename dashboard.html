@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Панель управления - Book&Go</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="min-h-screen bg-light">
+  <header class="header">
+    <div class="container header-content">
+      <div class="logo">
+        <svg class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+          <line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8" y1="2" x2="8" y2="6"/>
+          <line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        <h1>Book&Go</h1>
+      </div>
+      <nav>
+        <ul class="nav-list">
+          <li>
+            <a href="index.html" class="nav-link">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                <polyline points="9,22 9,12 15,12 15,22"/>
+              </svg>
+              Главная
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container dashboard-main">
+    <div class="dashboard-header">
+      <h2 class="dashboard-title">Панель управления</h2>
+      <a href="booking.html" class="btn btn-primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"/>
+          <line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        Новая запись
+      </a>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Всего записей</div>
+        <div class="stat-value" id="totalAppointments">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Предстоящие</div>
+        <div class="stat-value" id="upcomingAppointments">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Завершенные</div>
+        <div class="stat-value" id="pastAppointments">0</div>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <div class="tabs-list">
+        <button class="tab-trigger active" data-tab="upcoming">Предстоящие</button>
+        <button class="tab-trigger" data-tab="past">Прошедшие</button>
+      </div>
+
+      <div class="tab-content active" id="upcoming">
+        <div id="upcomingList" class="appointments-list">
+          <div class="loading" id="loadingUpcoming">
+            <div class="spinner"></div>
+            <p>Загрузка записей...</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-content" id="past">
+        <div id="pastList" class="appointments-list">
+          <div class="loading" id="loadingPast">
+            <div class="spinner"></div>
+            <p>Загрузка записей...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- notification -->
+<div id="toast" class="toast hidden">
+  <div class="toast-content">
+    <span id="toastMessage"></span>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
