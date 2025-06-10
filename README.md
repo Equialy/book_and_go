@@ -52,12 +52,6 @@ python -m http.server 8000
 Открыть http://localhost:8000
 ```
 
-#### С Node.js:
-```bash
-npx serve .
-
-Открыть указанный адрес
-```
 
 
 
