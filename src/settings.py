@@ -30,8 +30,7 @@ class Db(BaseModel):
 
 class ApiV1Prefix(BaseModel):
     prefix: str = "/api/v1"
-    books: str = "books"
-    readers: str = "readers"
+    panel: str = "/panel"
     jwt: str = "/jwt"
     auth: str = "/auth"
     users: str = "/users"

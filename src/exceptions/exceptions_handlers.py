@@ -14,7 +14,7 @@ def register_exceptions_hanlder(app: FastAPI):
     def handle_validation_error(request: Request, exc: ValidationError):
         return ORJSONResponse(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            content={"msg": "Unhandled Error", "err": exc.errors()},
+            content={"msg": "Unhandled Error", "err": str(exc.errors())},
         )
 
     @app.exception_handler(RequestValidationError)

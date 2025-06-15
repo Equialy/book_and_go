@@ -126,8 +126,10 @@ celerybeat.pid
 
 # Environments
 .env
+.env.docker-compose
 .nexus_link
 .venv
+frontend/node_modules
 env/
 venv/
 ENV/
@@ -167,4 +169,5 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
-
+postgres-data
+pgadmin-data
