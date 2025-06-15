@@ -19,6 +19,8 @@ class BookingPage {
 
         // Валидация в реальном времени
         this.setupRealTimeValidation()
+
+        // НЕ показываем loading overlay при инициализации!
     }
 
     setupDateConstraints() {
@@ -98,10 +100,13 @@ class BookingPage {
         this.isSubmitting = true
         const submitBtn = document.getElementById("submitBtn")
 
-        // Показать состояние загрузки
+        // Показать состояние загрузки ТОЛЬКО при отправке формы
         if (submitBtn) {
             submitBtn.disabled = true
-            submitBtn.textContent = "Отправка..."
+            submitBtn.innerHTML = `
+        <div class="btn-spinner"></div>
+        Отправка...
+      `
         }
 
         try {
@@ -146,7 +151,7 @@ class BookingPage {
 
             // Перенаправление на страницу успеха через 2 секунды
             setTimeout(() => {
-                window.location.href = "/success"
+                window.location.href = "success.html"
             }, 2000)
         } catch (error) {
             console.error("Error submitting form:", error)
@@ -175,7 +180,7 @@ class BookingPage {
                     )
 
                     setTimeout(() => {
-                        window.location.href = "/success"
+                        window.location.href = "success.html"
                     }, 2000)
                 } catch (fallbackError) {
                     console.error("Fallback save failed:", fallbackError)
@@ -187,7 +192,7 @@ class BookingPage {
             // Восстанавливаем кнопку
             if (submitBtn) {
                 submitBtn.disabled = false
-                submitBtn.textContent = "Записаться"
+                submitBtn.innerHTML = "Записаться"
             }
         }
     }

@@ -116,7 +116,7 @@ class DashboardPage {
             listElement.innerHTML = `
         <div class="empty-state">
           <p>У вас нет ${type === "upcoming" ? "предстоящих" : "прошедших"} записей</p>
-          ${type === "upcoming" ? '<a href="/booking" class="btn btn-primary">Создать запись</a>' : ""}
+          ${type === "upcoming" ? '<a href="booking.html" class="btn btn-primary">Создать запись</a>' : ""}
         </div>
       `
             return
@@ -128,76 +128,108 @@ class DashboardPage {
 
         // Добавить обработчики для кнопок удаления
         listElement.querySelectorAll(".delete-btn").forEach((btn) => {
-            btn.addEventListener("click", () => {
+            btn.addEventListener("click", (e) => {
+                e.preventDefault()
                 const appointmentId = btn.dataset.id
-                this.deleteAppointment(appointmentId)
+                this.deleteAppointment(appointmentId, btn)
             })
         })
     }
 
     createAppointmentCard(appointment, isPast = false) {
         return `
-      <div class="appointment-card">
-        <div class="appointment-info">
-          <div class="appointment-header">
-            <span class="badge ${isPast ? "badge-outline" : "badge-default"}">${appointment.service}</span>
-            <span class="appointment-date">${window.DateUtils.formatDate(appointment.date)} в ${appointment.time}</span>
-          </div>
-          
-          <h3 class="appointment-name">${appointment.name}</h3>
-          
-          <div class="appointment-details">
-            <div class="appointment-detail">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                <circle cx="12" cy="7" r="4"/>
-              </svg>
-              <span>${appointment.email}</span>
-            </div>
-            <div class="appointment-detail">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"/>
-                <polyline points="12,6 12,12 16,14"/>
-              </svg>
-              <span>${appointment.phone}</span>
-            </div>
-          </div>
-          
-          ${appointment.notes ? `<div class="appointment-notes">${appointment.notes}</div>` : ""}
+    <div class="appointment-card" data-appointment-id="${appointment.id}">
+      <div class="appointment-info">
+        <div class="appointment-header">
+          <span class="badge ${isPast ? "badge-outline" : "badge-default"}">${appointment.service}</span>
+          <span class="appointment-date">${window.DateUtils.formatDate(appointment.date)} в ${appointment.time}</span>
         </div>
         
-        <button class="delete-btn" data-id="${appointment.id}" title="Удалить">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="3,6 5,6 21,6"/>
-            <path d="m19,6v14a2,2 0 0,1-2,2H7a2,2 0 0,1-2-2V6m3,0V4a2,2 0 0,1,2-2h4a2,2 0 0,1,2,2v2"/>
-          </svg>
-        </button>
+        <h3 class="appointment-name">${appointment.name}</h3>
+        
+        <div class="appointment-details">
+          <div class="appointment-detail">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+            <span>${appointment.email}</span>
+          </div>
+          <div class="appointment-detail">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12,6 12,12 16,14"/>
+            </svg>
+            <span>${appointment.phone}</span>
+          </div>
+        </div>
+        
+        ${appointment.notes ? `<div class="appointment-notes">${appointment.notes}</div>` : ""}
       </div>
-    `
+      
+      <button class="delete-btn" data-id="${appointment.id}" title="Удалить">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="3,6 5,6 21,6"/>
+          <path d="m19,6v14a2,2 0 0,1-2,2H7a2,2 0 0,1-2-2V6m3,0V4a2,2 0 0,1,2-2h4a2,2 0 0,1,2,2v2"/>
+        </svg>
+      </button>
+    </div>
+  `
     }
 
-    async deleteAppointment(id) {
+    async deleteAppointment(id, buttonElement) {
         if (!confirm("Вы уверены, что хотите удалить эту запись?")) {
             return
         }
 
+        // Проверяем что ID является числом (как требует ваш API)
+        const appointmentId = Number.parseInt(id)
+        if (isNaN(appointmentId)) {
+            window.Toast.show("Неверный ID записи", "error")
+            return
+        }
+
+        // Сохраняем оригинальное содержимое кнопки
+        const originalButtonContent = buttonElement.innerHTML
+
         try {
-            console.log("Deleting appointment:", id)
+            console.log("Deleting appointment with ID:", appointmentId)
+
+            // Показываем спиннер В КНОПКЕ удаления
+            buttonElement.disabled = true
+            buttonElement.innerHTML = `
+        <div class="btn-spinner-small"></div>
+      `
 
             // Пытаемся удалить через API
-            await window.AppointmentsAPI.delete(id)
-            window.Toast.show("Запись удалена", "success")
+            const response = await window.AppointmentsAPI.delete(appointmentId)
+            console.log("Delete response:", response)
+
+            window.Toast.show("Запись успешно удалена", "success")
+
+            // Обновляем список записей только если удаление прошло успешно
+            this.appointments = this.appointments.filter((app) => app.id != id)
+            this.renderAppointments()
         } catch (error) {
             console.error("Error deleting appointment via API:", error)
 
-            // Fallback на локальное удаление
-            window.AppointmentStorage.deleteAppointment(id)
-            window.Toast.show("Запись удалена локально", "success")
-        }
+            const errorMessage = window.ApiErrorHandler.getErrorMessage(error)
+            window.Toast.show(`Ошибка удаления: ${errorMessage}`, "error")
 
-        // Обновляем список записей
-        this.appointments = this.appointments.filter((app) => app.id !== id)
-        this.renderAppointments()
+            // Восстанавливаем кнопку при ошибке
+            buttonElement.disabled = false
+            buttonElement.innerHTML = originalButtonContent
+
+            // Fallback на локальное удаление только если это ошибка сети
+            if (error.message.includes("подключиться к серверу")) {
+                window.AppointmentStorage.deleteAppointment(id)
+                window.Toast.show("Запись удалена локально", "success")
+
+                // Обновляем список записей
+                this.appointments = this.appointments.filter((app) => app.id != id)
+                this.renderAppointments()
+            }
+        }
     }
 }
 

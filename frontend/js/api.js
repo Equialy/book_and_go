@@ -1,4 +1,3 @@
-// Пример API вызова
 // Конфигурация API
 const API_CONFIG = {
     BASE_URL: "http://localhost:8000", // Замените на URL вашего FastAPI сервера
@@ -43,12 +42,13 @@ class ApiClient {
             const response = await fetch(url, config)
 
             console.log("Response status:", response.status)
-            console.log("Response headers:", response.headers)
+            console.log("Response headers:", Object.fromEntries(response.headers.entries()))
 
             if (!response.ok) {
                 let errorData = {}
                 try {
                     errorData = await response.json()
+                    console.log("Error response data:", errorData)
                 } catch (e) {
                     console.error("Failed to parse error response:", e)
                 }
@@ -117,7 +117,8 @@ class AppointmentsAPI {
 
     static async delete(id) {
         console.log("Deleting appointment with id:", id)
-        return ApiClient.delete(`${API_CONFIG.ENDPOINTS.APPOINTMENTS}/${id}`)
+        // Ваш API ожидает query параметр appointment_model
+        return ApiClient.delete(`${API_CONFIG.ENDPOINTS.APPOINTMENTS}?appointment_model=${id}`)
     }
 }
 
@@ -126,12 +127,16 @@ class ApiErrorHandler {
     static getErrorMessage(error) {
         if (error.message.includes("Failed to fetch")) {
             return "Не удается подключиться к серверу. Проверьте подключение к интернету и убедитесь что FastAPI запущен."
+        } else if (error.message.includes("404")) {
+            return "Запись не найдена. Возможно, она уже была удалена."
         } else if (error.message.includes("422")) {
-            return "Проверьте правильность заполнения всех полей"
+            return "Неверный формат данных. Проверьте правильность ID записи."
         } else if (error.message.includes("400")) {
             return "Неверные данные. Проверьте введенную информацию."
         } else if (error.message.includes("500")) {
             return "Ошибка сервера. Попробуйте позже."
+        } else if (error.message.includes("403")) {
+            return "Недостаточно прав для выполнения операции."
         } else if (error.message.includes("CORS")) {
             return "Ошибка CORS. Проверьте настройки сервера."
         } else if (error.message) {
@@ -145,30 +150,3 @@ class ApiErrorHandler {
 window.ApiClient = ApiClient
 window.AppointmentsAPI = AppointmentsAPI
 window.ApiErrorHandler = ApiErrorHandler
-
-
-
-
-
-// const API_BASE_URL = 'http://localhost:8000'; // URL вашего FastAPI сервера
-//
-// async function createAppointment(appointmentData) {
-//     try {
-//         const response = await fetch(`${API_BASE_URL}/appointments`, {
-//             method: 'POST',
-//             headers: {
-//                 'Content-Type': 'application/json',
-//             },
-//             body: JSON.stringify(appointmentData)
-//         });
-//
-//         if (!response.ok) {
-//             throw new Error('Network response was not ok');
-//         }
-//
-//         return await response.json();
-//     } catch (error) {
-//         console.error('Error creating appointment:', error);
-//         throw error;
-//     }
-// }
