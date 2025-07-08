@@ -15,8 +15,8 @@ services:
 
   backend:
     build:
-      context: ./src
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: src/Dockerfile
     container_name: backend_book_and_go
     env_file:
       - .env.docker-compose
