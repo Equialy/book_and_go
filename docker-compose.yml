@@ -4,7 +4,7 @@ services:
 
   postgres:
     image: postgres:17
-    container_name: postgres_library_books
+    container_name: postgres_book_and_go
     env_file:
       - .env.docker-compose
     environment:
@@ -33,7 +33,7 @@ services:
 
   pgadmin:
     image: dpage/pgadmin4
-    container_name: pgadmin_library_books
+    container_name: pgadmin__book_and_go
     env_file:
       - .env.docker-compose
     environment:
