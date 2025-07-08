@@ -29,5 +29,5 @@ app.use((req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Сервер запущен на http://localhost:${port}`);
+  console.log(`Сервер запущен на http://localhost:${port}`); # 0.0.0.0 для прода
 });

@@ -1,8 +1,8 @@
 // Конфигурация API
 const API_CONFIG = {
-    BASE_URL: "http://localhost:8000", // Замените на URL вашего FastAPI сервера
+    BASE_URL: "http://localhost:8000", // написать /api на проде
     ENDPOINTS: {
-        APPOINTMENTS: "/api/v1/panel/appointments",
+        APPOINTMENTS: "/api/v1/panel/appointments", // везде убрать /api на проде
         LOGIN: "/api/v1/login",
         REGISTER: "/api/v1/register",
         ME: "/api/v1/users/me",

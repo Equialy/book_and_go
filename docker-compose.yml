@@ -1,5 +1,51 @@
 services:
 
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend_book_and_go
+    ports:
+      - "3000:3000"
+    networks:
+      - app_book_and_go_network
+
+
+
+
+  backend:
+    build:
+      context: ./src
+      dockerfile: Dockerfile
+    container_name: backend_book_and_go
+    env_file:
+      - .env.docker-compose
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB__NAME}
+      DB_USER: ${DB__USER}
+      DB_PASSWORD: ${DB__PASSWORD}
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - app_book_and_go_network
+
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: nginx_book_and_go
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - app_book_and_go_network
 
 
   postgres:
@@ -29,7 +75,7 @@ services:
         max-file: "5"
         compress: "true"
     networks:
-      - app_network
+      - app_book_and_go_network
 
   pgadmin:
     image: dpage/pgadmin4
@@ -54,10 +100,10 @@ services:
         max-file: "5"
         compress: "true"
     networks:
-      - app_network
+      - app_book_and_go_network
 
 
 
 networks:
-  app_network:
-    name: app_network
+  app_book_and_go_network:
+    name: app_book_and_go_network
